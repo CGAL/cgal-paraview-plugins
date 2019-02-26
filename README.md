@@ -1,12 +1,3 @@
----
-layout: post
-title: "How to Write a Paraview Plugin"
-description: ""
-category: 
-tags: []
----
-{% include JB/setup %}
-
 ### Making a CGAL Plugin for Paraview
 
 
@@ -91,4 +82,3 @@ Be careful to use the same version of Qt for compiling the plugin than the one u
 ### Loading the Plugin in Paraview
 
 Launch Paraview, go to Tools->Manage Plugins and click on Load New. Select the lib file of your plugin in the list and click Close. The plugin should appear in the Filter List.
-  <a href="../../../../images/IsotropicRemeshingFilter.png"><img src="../../../../images/IsotropicRemeshingFilter.png" style="max-width:95%"/></a><br>
