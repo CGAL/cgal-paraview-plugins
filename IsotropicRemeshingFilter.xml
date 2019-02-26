@@ -1,0 +1,64 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="IsotropicRemeshingFilter" class="vtkIsotropicRemeshingFilter" label="Isotropic Remeshing">
+    <Documentation
+      short_help="Remeshes datasets."
+      long_help="Remeshes one or multiple datasets.">
+      This Filter will remesh the given data sets. It takes a MultipleBlockDataSet (of polydata or unstructured grid )
+      as input, and returns a MultipleBlockDataSet containing the remeshed inputs as PolyData.
+
+      To create a MultiBlockDataSet, select all the meshes you want to remesh and use the Group Datasets filter.
+    </Documentation>
+      <InputProperty
+        name="Mesh"
+        port_index="0"
+        command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataSet"/>
+        </DataTypeDomain>
+        <Documentation>
+          The input Meshes.
+        </Documentation>
+      </InputProperty>
+
+      <DoubleVectorProperty name="Length"
+        command="SetLength"
+        label="Target Edge Length"
+        number_of_elements="1"
+        default_values="0"
+        information_property="LengthInfo"
+        >
+         <DoubleRangeDomain name="range" min="0.0" />
+        <Documentation>
+          The targeted length for the new edges of the mesh (default is 1% of the Bbox).
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty name="LengthInfo"
+                            command="GetLengthInfo"
+                            information_only="1">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="MainIterations"
+        command="SetMainIterations"
+        label="#Main Iterations"
+        number_of_elements="1"
+        default_values="1">
+        <Documentation>
+          The number of iterations for the sequence of atomic operations performed (edge splits,
+          edge collapses, edge flips, tangential relaxation and projection to the initial surface
+          to generate a smooth mesh with a prescribed edge length).
+        </Documentation>
+      </IntVectorProperty>
+
+      <Hints>
+        <ShowInMenu category="CGAL" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
