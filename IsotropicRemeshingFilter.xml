@@ -3,12 +3,11 @@
     <SourceProxy name="IsotropicRemeshingFilter" class="vtkIsotropicRemeshingFilter" label="Isotropic Remeshing">
     <Documentation
       short_help="Remeshes datasets."
-      long_help="Remeshes one or multiple datasets.">
-      This Filter will remesh the given data sets. It takes a MultipleBlockDataSet (of polydata or unstructured grid )
-      as input, and returns a MultipleBlockDataSet containing the remeshed inputs as PolyData.
-
-      To create a MultiBlockDataSet, select all the meshes you want to remesh and use the Group Datasets filter.
+      long_help="Remeshes a dataset.">
+      This filter will remesh the given data set. It takes a PolyData 
+      as input, and returns a PolyData containing the remeshed input.
     </Documentation>
+<!-- Dialog to choose the input -->
       <InputProperty
         name="Mesh"
         port_index="0"
@@ -24,7 +23,7 @@
           The input Meshes.
         </Documentation>
       </InputProperty>
-
+<!-- Elements of configuration of the filter -->
       <DoubleVectorProperty name="Length"
         command="SetLength"
         label="Target Edge Length"
@@ -37,13 +36,11 @@
           The targeted length for the new edges of the mesh (default is 1% of the Bbox).
         </Documentation>
       </DoubleVectorProperty>
-
       <DoubleVectorProperty name="LengthInfo"
                             command="GetLengthInfo"
                             information_only="1">
         <SimpleDoubleInformationHelper />
       </DoubleVectorProperty>
-
       <IntVectorProperty name="MainIterations"
         command="SetMainIterations"
         label="#Main Iterations"
@@ -55,7 +52,6 @@
           to generate a smooth mesh with a prescribed edge length).
         </Documentation>
       </IntVectorProperty>
-
       <Hints>
         <ShowInMenu category="CGAL" />
       </Hints>
