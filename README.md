@@ -72,7 +72,7 @@ On the cmake side, the most important thing is the `ADD_PARAVIEW_PLUGIN` macro. 
 
 
 #### XML
-
+https://github.com/CGAL/cgal-paraview-plugins/blob/b80ba757641eef163ba4127754eb5799bfa2df72/IsotropicRemeshingFilter.xml#L1-L60
 
 ### Building the Plugin
 
