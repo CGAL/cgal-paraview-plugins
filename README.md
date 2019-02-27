@@ -1,4 +1,4 @@
-### Making a CGAL Plugin for Paraview
+## Making a CGAL Plugin for Paraview
 
 ![alt text](https://github.com/CGAL/cgal-web/blob/fdcd428168914802e2aff7dcea6bc5d4e8aaadd6/images/IsotropicRemeshingFilter.png)
 To make a plugin for Paraview, you need a developer version of Paraview, 
