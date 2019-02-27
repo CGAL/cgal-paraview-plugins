@@ -1,5 +1,7 @@
 ## Making a CGAL Plugin for Paraview
 
+On this page we explain how to make a plugin for Paraview that can perform the [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData`object.
+
 ![alt text](https://github.com/CGAL/cgal-web/blob/fdcd428168914802e2aff7dcea6bc5d4e8aaadd6/images/IsotropicRemeshingFilter.png)
 To make a plugin for Paraview, you need a developer version of Paraview, 
 as a plugin only works with the same version it was built with.
