@@ -1,8 +1,9 @@
 ## Making a CGAL Plugin for Paraview
 
 On this page we explain how to make a plugin for Paraview that can perform the [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData`object.
+![alt text](https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png)
 
-![alt text](https://github.com/CGAL/cgal-web/blob/fdcd428168914802e2aff7dcea6bc5d4e8aaadd6/images/IsotropicRemeshingFilter.png)
+
 To make a plugin for Paraview, you need a developer version of Paraview, 
 as a plugin only works with the same version it was built with.
 To show you how, let us take an example: an Isotropic Remeshing plugin for Paraview. 
@@ -439,5 +440,3 @@ Be careful to use the same version of Qt for compiling the plugin than the one u
 ### Loading the Plugin in Paraview
 
 Launch Paraview, go to Tools->Manage Plugins and click on Load New. Select the lib file of your plugin in the list and click Close. The plugin should appear in the Filter List.
-
-![alt text](https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png)
