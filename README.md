@@ -439,3 +439,5 @@ Be careful to use the same version of Qt for compiling the plugin than the one u
 ### Loading the Plugin in Paraview
 
 Launch Paraview, go to Tools->Manage Plugins and click on Load New. Select the lib file of your plugin in the list and click Close. The plugin should appear in the Filter List.
+
+![alt text](https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png)
