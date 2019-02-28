@@ -33,7 +33,7 @@
         >
          <DoubleRangeDomain name="range" min="0.0" />
         <Documentation>
-          The targeted length for the new edges of the mesh (default is 1% of the Bbox).
+          The target length for the new edges of the mesh (default is 1% of the bounding box).
         </Documentation>
       </DoubleVectorProperty>
       <DoubleVectorProperty name="LengthInfo"
@@ -52,6 +52,7 @@
           to generate a smooth mesh with a prescribed edge length).
         </Documentation>
       </IntVectorProperty>
+      <!-- Show in the Filters menu under "CGAL"-->
       <Hints>
         <ShowInMenu category="CGAL" />
       </Hints>
