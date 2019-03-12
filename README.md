@@ -1,54 +1,50 @@
-## Making a CGAL Plugin for Paraview
+## Creating a CGAL Plugin for Paraview
 
-On this page we explain how to make a plugin for Paraview that can perform the [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData`object.
-![alt text](https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png)
+This page is a tutorial detailing the creation a CGAL plugin for the data analysis and visualization software [Paraview](https://www.paraview.org/). The different steps of the process are illustrated using code from a CGAL plugin that can run CGAL's [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData` object. This repository contains all the necessary source files related to the example plugin such that you can compile, run, and tweak it as you desire.
 
+<p align="center">
+<img src="https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png" alt="drawing" width="750"/>
+</p>
 
-To make a plugin for Paraview, you need a developer version of Paraview, 
-as a plugin only works with the same version it was built with.
-To show you how, let us take an example: an Isotropic Remeshing plugin for Paraview. 
+> **_NOTE:_** **Since a Paraview plugin can only be loaded within the same version of Paraview that it was built with, a developer version of Paraview is required. Furthermore, this example plugin and tutorial is restricted to versions 5.6 or earlier of Paraview due to a change of API.**
 
 ### Building Paraview from Sources
 
-Go to [Paraview's GitLab page](https://gitlab.kitware.com/paraview/paraview) and get Paraview either by downloading the release 5.6, or by cloning the repository and checking out the tag 5.6 (this example will not work with the master branch because of a change of API).
-It is recommended to take a release version for safety and stability.
-Once it is done, if you chose to clone the repository, you need to update the submodules. To do so,  go to the source directory, and do 
+First, obtain Paraview's sources from [the official repository](https://gitlab.kitware.com/paraview/paraview). You can either directly download the release 5.6, or clone the repository and check out the tag `5.6`. For safety and stability, we recommend using a `release` version. Note that if you chose to clone the repository, you will also need to update the submodules. To do so, go to the source directory, and run:
 
 ```
 git submodule update --init --recursive
- ```
-Once you have everything, create a build directory, and type this inside of it:
 ```
-cmake <path-to-src>
+
+You can now create a build directory, and build Paraview:
+```
+mkdir <path-to-your-build-directory>
+cd <path-to-your-build-directory>
+cmake <path-to-Paraview-sources>
 make
 ```
-It takes a little while, but in the end it produces a usable version of Paraview.
 
 ### Writing a Plugin
 
-Now that you have Paraview, assuming you already have a version of CGAL, you are ready to start coding.
+Now that you have built Paraview, and assuming you already have a ready-to-use version of CGAL (see [this helper page](https://doc.cgal.org/latest/Manual/installation.html) otherwise), you are ready to start writing your plugin.
 
-The first thing to understand here is that VTK is based on a pipeline. 
-As a quick overview, let's say that a *source* creates a VTK object, which can serve as input of a *filter*, that performs its algorithm when its `Update()` function is called. 
+A few files are expected to make a functional plugin, and this comes from the fact that [VTK](https://vtk.org/) (the underlying software beneath Paraview) is based on a pipeline that we can roughly describe as follows: a *source* creates a VTK object, which can then serve as input for a *filter*, which performs its algorithm when its `Update()` function is called. A Paraview *plugin* is the association between a filter of this pipeline and an XML file used to create a UI element.
 
+Most of the time, we want to interact with VTK data structures. In the case of our isotropic remeshing plugin, our input data is a `vtkPolyData`, and so we derive our filter class from the class [`vtkGeometryFilter`](https://vtk.org/doc/release/5.6/html/a00712.html).
 
-A Paraview *plugin* is the association between a filter of this pipeline and an XML file that is used to create a UI element.
-Most of the time, we want to interact with a VTK data structure. In this example, our input is a `vtkPolyData` so we derive from a `vtkGeometryFilter`.
-
-A filter must implement the following methods to interact with the pipeline: 
-
+In our case, the filter must implement the following methods to interact with the pipeline:
 - `RequestDataObject()`
-   This function is used to create the output object. In this example, this is where the `vtkPolyData` that will hold the remeshed data is constructed.
-   In our example, it is not needed, because the `vtkGeometryFilter` already implements it. It always returns an empty `vtkPolyData`.
+   This function is used to create the output object. For our plugin, this is where the `vtkPolyData` object that will hold the remeshed data is constructed,
+   and it is not needed because the class `vtkGeometryFilter` already implements it (it returns an empty `vtkPolyData`).
 - `RequestInformation()`
-   In this function, we compute everything we can without heavy computation, like the bounding box for example. This is called before `Update()` and provides information that might be needed from the input. In our example, this is where we compute the default target edge length.
-    Note: In some algorithms, this function is replaced by `ExecuteInformation()`. Before VTK 5, `Executeinformation()` was the standard, and some algorithm used for the transition kept it this way, so check it in the documentation of the base class you choose before you write that function, as it might never be called.
+   In this function, we do all possible light-weight computations, such as computing the bounding box of the input data, for example. This function is called before `Update()` and provides information that might be needed from the input. In our case, this is where we compute the default target edge length.
+   Note: In some algorithms, this function is replaced by `ExecuteInformation()`. Before VTK 5, `Executeinformation()` was the standard, and some algorithms used for the transition have kept it this way, so you should check the documentation of the base class that you have chosen before you write this function, as it might actually never be called.
 - `RequestData()`
-   This is where the CGAL isotropic remeshing algorithm is performed. It gets the input, applies the algorithm and fills the output.
+   This is where the input is acquired, the main algorithm is performed, and the output is filled. In our case, we run CGAL's isotropic remeshing algorithm.
 - `FillInputPortInformation()`
-   This is where we specify what type of object we want as input.
+   This is where we specify the type of the object that we expect as input.
 - `FillOutputPortInformation()`
-   This is where we specify of what type of object the output will be.
+   This is where we specify the type of the output object.
 
 #### Header File
 ```c++
@@ -61,9 +57,7 @@ A filter must implement the following methods to interact with the pipeline:
 // Inherit from the desired filter
 class vtkIsotropicRemeshingFilter : public vtkGeometryFilter
 {
-  
 public:
-  
   // VTK requirements
   static vtkIsotropicRemeshingFilter* New();
   vtkTypeMacro(vtkIsotropicRemeshingFilter, vtkGeometryFilter);
@@ -88,13 +82,12 @@ public:
 
 protected:
   vtkIsotropicRemeshingFilter();
-  ~vtkIsotropicRemeshingFilter(){};
+  ~vtkIsotropicRemeshingFilter(){}
 
   // Computes the bbox's diagonal length to set the default target edge length.
   int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  
   // Data set by the UI and used by the algorithm
   double Length;
   double LengthInfo;
@@ -125,8 +118,8 @@ vtkStandardNewMacro(vtkIsotropicRemeshingFilter);
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 // Useful typedefs
-typedef CGAL::Simple_cartesian<double>    K;
-typedef CGAL::Surface_mesh<K::Point_3>    SM;
+typedef CGAL::Simple_cartesian<double>                            K;
+typedef CGAL::Surface_mesh<K::Point_3>                            SM;
 typedef boost::property_map<SM, CGAL::vertex_point_t>::type       VPMap;
 typedef boost::property_map_value<SM, CGAL::vertex_point_t>::type Point_3;
 typedef boost::graph_traits<SM>::vertex_descriptor                vertex_descriptor;
@@ -149,18 +142,16 @@ vtkIsotropicRemeshingFilter::vtkIsotropicRemeshingFilter()
 // Creates CGAL::Surface_mesh from vtkPolydata
 // Calls the CGAL::isotropic_remeshing algorithm
 // Fills the output vtkPolyData from the result.
-int vtkIsotropicRemeshingFilter::RequestData(
-    vtkInformation *,
-    vtkInformationVector **inputVector,
-    vtkInformationVector *outputVector)
+int vtkIsotropicRemeshingFilter::RequestData(vtkInformation *,
+                                             vtkInformationVector **inputVector,
+                                             vtkInformationVector *outputVector)
 {
   //  Get the input and output data objects.
   //  Get the info objects
   vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
   vtkInformation *outInfo = outputVector->GetInformationObject(0);
   //  Get the input
-  vtkPolyData *polydata = vtkPolyData::SafeDownCast(
-        inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *polydata = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
   
   /********************************************
    * Create a SurfaceMesh from the input mesh *
@@ -174,13 +165,13 @@ int vtkIsotropicRemeshingFilter::RequestData(
   
   // Extract points
   std::vector<vertex_descriptor> vertex_map(nb_points);
-  for (vtkIdType i = 0; i<nb_points; ++i)
+  for (vtkIdType i=0; i<nb_points; ++i)
   {
     double coords[3];
     polydata->GetPoint(i, coords);
     vertex_descriptor v = add_vertex(sm);
     put(vpmap, v, K::Point_3(coords[0], coords[1], coords[2]));
-    vertex_map[i]=v;
+    vertex_map[i] = v;
   }
   
   // Extract cells
@@ -190,7 +181,7 @@ int vtkIsotropicRemeshingFilter::RequestData(
     vtkIdType nb_vertices = cell_ptr->GetNumberOfPoints();
     std::vector<vertex_descriptor> vr(nb_vertices);
     for (vtkIdType k=0; k<nb_vertices; ++k)
-      vr[k]=vertex_map[cell_ptr->GetPointId(k)];
+      vr[k] = vertex_map[cell_ptr->GetPointId(k)];
     CGAL::Euler::add_face(vr, sm);
   }
   
@@ -205,6 +196,7 @@ int vtkIsotropicRemeshingFilter::RequestData(
   
   for (std::size_t i=0; i < isolated_vertices.size(); ++i)
     sm.remove_vertex(isolated_vertices[i]);
+
   if(!is_triangle_mesh(sm))
   {
     vtkErrorMacro("The input mesh must be triangulated ");
@@ -222,8 +214,7 @@ int vtkIsotropicRemeshingFilter::RequestData(
   /**********************************
    * Pass the SM data to the output *
    **********************************/
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-        outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
   vtkNew<vtkPoints> const vtk_points;
   vtkNew<vtkCellArray> const vtk_cells;
   vtk_points->Allocate(sm.number_of_vertices());
@@ -243,22 +234,22 @@ int vtkIsotropicRemeshingFilter::RequestData(
   for(face_descriptor f : faces(sm))
   {
     vtkNew<vtkIdList> cell;
-    for(halfedge_descriptor h :
-        halfedges_around_face(halfedge(f, sm), sm))
-    {
+    for(halfedge_descriptor h : halfedges_around_face(halfedge(f, sm), sm))
       cell->InsertNextId(Vids[target(h, sm)]);
-    }
+
     vtk_cells->InsertNextCell(cell);
   }
   
   output->SetPoints(vtk_points);
   output->SetPolys(vtk_cells);
   output->Squeeze();
+
   return 1;
 }
 
 // ----------------------------------------------------------------------------
-void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, vtkIndent indent)
+void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, 
+                                            vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
   os<<"Length        : "<<Length        <<std::endl;
@@ -267,15 +258,15 @@ void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, vtkIndent indent)
 }
 
 // ------------------------------------------------------------------------------
-int vtkIsotropicRemeshingFilter::FillInputPortInformation(
-    int vtkNotUsed(port), vtkInformation* info)
+int vtkIsotropicRemeshingFilter::FillInputPortInformation(int vtkNotUsed(port),
+                                                          vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;
 }
 
 // ------------------------------------------------------------------------------
-int vtkIsotropicRemeshingFilter::FillOutputPortInformation(int, 
+int vtkIsotropicRemeshingFilter::FillOutputPortInformation(int,
                                                            vtkInformation *info)
 {
   // Always returns a vtkPolyData
@@ -301,19 +292,18 @@ int vtkIsotropicRemeshingFilter::RequestInformation(vtkInformation *,
   
   // Computes the initial target length:
   double * bounds = input->GetBounds();
-  double diagonal = std::sqrt(
-        (bounds[0]-bounds[1]) * (bounds[0]-bounds[1]) +
-      (bounds[2]-bounds[3]) * (bounds[2]-bounds[3]) +
-      (bounds[4]-bounds[5]) * (bounds[4]-bounds[5])
-      );
+  double diagonal = std::sqrt((bounds[0]-bounds[1]) * (bounds[0]-bounds[1]) +
+                              (bounds[2]-bounds[3]) * (bounds[2]-bounds[3]) +
+                              (bounds[4]-bounds[5]) * (bounds[4]-bounds[5]));
   SetLengthInfo(0.01*diagonal);
-  return 1;
-} 
+  
+    return 1;
+}
 
 ```
 
 #### XML
-The XML file is what configures the widget in the UI. This is where we define the LineEdit for the target edge length and the number of iterations.
+The XML file is used to configure the widget in the UI. This is where we define the `LineEdit` to specify input parameters, such as the target edge length and the number of iterations in our case.
 
 ```xml
 <ServerManagerConfiguration>
@@ -380,10 +370,9 @@ The XML file is what configures the widget in the UI. This is where we define th
 
 ```
 
-
 #### CMakeLists
 
-On the cmake side, the most important thing is the `ADD_PARAVIEW_PLUGIN` macro. It takes the sources and the xml file for your plugin as arguments, and deals with most of the VTK parts.
+On the CMake side, the most important thing is the `ADD_PARAVIEW_PLUGIN` macro. It takes the sources and the XML file of the plugin as arguments, and deals with most of the VTK parts.
 
 ```cmake
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
@@ -425,18 +414,21 @@ endif (CGAL_FOUND)
 
 ### Building the Plugin
 
-To build a plugin, use CMake and provide the location of the CGAL library as CGAL_DIR.
-Example : 
+To build a plugin, use CMake and provide the location of the CGAL library with `CGAL_DIR`. For example:
 ```
- cd /path/to/build/dir
- cmake -DCGAL_DIR=~/CGAL/releases/CGAL-4.9/cmake/platforms/release  -DParaView_DIR=<PATH_TO_Paraview_DIR>  path/to/dir/containing/plugin's/CMakeLists.txt
- make
+  cd <path-to-build-dir>
+  cmake -DCGAL_DIR=~/CGAL/releases/CGAL-4.9/cmake/platforms/release -DParaView_DIR=<PATH-TO-Paraview-DIR> <path-to-dir-containing-plugin's-CMakeLists.txt>
+  make
 ```
 
-Until Paraview 5.6.0 included, the Paraview_DIR is simply the build dir, where ParaViewConfig.cmake can be found.
+Until Paraview 5.6.0 (included), the variable `Paraview_DIR` is simply the build directory, where the file `ParaViewConfig.cmake` can be found. 
 
-Be careful to use the same version of Qt for compiling the plugin than the one used to compile paraview.
+> **_NOTE:_** **Be careful to use the same version of Qt when compiling the plugin and when compiling Paraview.**
 
 ### Loading the Plugin in Paraview
 
-Launch Paraview, go to Tools->Manage Plugins and click on Load New. Select the lib file of your plugin in the list and click Close. The plugin should appear in the Filter List.
+Launch Paraview, go to `Tools->Manage Plugins` and click on `Load New`. Select the lib file of your plugin in the list, and click `Close`. The plugin should appear in the `Filter List`. Your plugin is now ready to use!
+
+### Further Information
+
+You can find further information on VTK and Paraview on their [wiki](https://vtk.org/Wiki/VTK/) and [documentation](https://vtk.org/documentation/) pages. For CGAL questions or issues, you can use the channels described on [this page](https://www.cgal.org/mailing_list.html) as well as the issues of this Github repository.
