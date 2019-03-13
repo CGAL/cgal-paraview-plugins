@@ -13,8 +13,8 @@ vtkStandardNewMacro(vtkIsotropicRemeshingFilter);
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 // Useful typedefs
-typedef CGAL::Simple_cartesian<double>    K;
-typedef CGAL::Surface_mesh<K::Point_3>    SM;
+typedef CGAL::Simple_cartesian<double>                            K;
+typedef CGAL::Surface_mesh<K::Point_3>                            SM;
 typedef boost::property_map<SM, CGAL::vertex_point_t>::type       VPMap;
 typedef boost::property_map_value<SM, CGAL::vertex_point_t>::type Point_3;
 typedef boost::graph_traits<SM>::vertex_descriptor                vertex_descriptor;
@@ -37,18 +37,16 @@ vtkIsotropicRemeshingFilter::vtkIsotropicRemeshingFilter()
 // Creates CGAL::Surface_mesh from vtkPolydata
 // Calls the CGAL::isotropic_remeshing algorithm
 // Fills the output vtkPolyData from the result.
-int vtkIsotropicRemeshingFilter::RequestData(
-    vtkInformation *,
-    vtkInformationVector **inputVector,
-    vtkInformationVector *outputVector)
+int vtkIsotropicRemeshingFilter::RequestData(vtkInformation *,
+                                             vtkInformationVector **inputVector,
+                                             vtkInformationVector *outputVector)
 {
   //  Get the input and output data objects.
   //  Get the info objects
   vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
   vtkInformation *outInfo = outputVector->GetInformationObject(0);
   //  Get the input
-  vtkPolyData *polydata = vtkPolyData::SafeDownCast(
-        inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *polydata = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
   
   /********************************************
    * Create a SurfaceMesh from the input mesh *
@@ -62,13 +60,13 @@ int vtkIsotropicRemeshingFilter::RequestData(
   
   // Extract points
   std::vector<vertex_descriptor> vertex_map(nb_points);
-  for (vtkIdType i = 0; i<nb_points; ++i)
+  for (vtkIdType i=0; i<nb_points; ++i)
   {
     double coords[3];
     polydata->GetPoint(i, coords);
     vertex_descriptor v = add_vertex(sm);
     put(vpmap, v, K::Point_3(coords[0], coords[1], coords[2]));
-    vertex_map[i]=v;
+    vertex_map[i] = v;
   }
   
   // Extract cells
@@ -78,7 +76,7 @@ int vtkIsotropicRemeshingFilter::RequestData(
     vtkIdType nb_vertices = cell_ptr->GetNumberOfPoints();
     std::vector<vertex_descriptor> vr(nb_vertices);
     for (vtkIdType k=0; k<nb_vertices; ++k)
-      vr[k]=vertex_map[cell_ptr->GetPointId(k)];
+      vr[k] = vertex_map[cell_ptr->GetPointId(k)];
     CGAL::Euler::add_face(vr, sm);
   }
   
@@ -93,6 +91,7 @@ int vtkIsotropicRemeshingFilter::RequestData(
   
   for (std::size_t i=0; i < isolated_vertices.size(); ++i)
     sm.remove_vertex(isolated_vertices[i]);
+
   if(!is_triangle_mesh(sm))
   {
     vtkErrorMacro("The input mesh must be triangulated ");
@@ -102,25 +101,22 @@ int vtkIsotropicRemeshingFilter::RequestData(
   /*****************************
    * Apply Isotropic remeshing *
    *****************************/
-  std::cout<<"Length = "<<Length<<", MainIterations = "<<MainIterations<<std::endl;
   PMP::isotropic_remeshing(sm.faces(),
                            Length,
                            sm,
                            PMP::parameters::number_of_iterations(MainIterations));
-  // After the remeshing, there may be removed_vertices in the surface mesh, which we don't want
-  // as we need a correspondance between a vertex ID and it's index in Vids later.
-  sm.collect_garbage();
+  
   /**********************************
    * Pass the SM data to the output *
    **********************************/
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-        outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
   vtkNew<vtkPoints> const vtk_points;
   vtkNew<vtkCellArray> const vtk_cells;
   vtk_points->Allocate(sm.number_of_vertices());
   vtk_cells->Allocate(sm.number_of_faces());
   std::vector<vtkIdType> Vids(sm.number_of_vertices());
   vtkIdType inum = 0;
+  
   for(vertex_descriptor v : vertices(sm))
   {
     const K::Point_3& p = get(vpmap, v);
@@ -129,24 +125,26 @@ int vtkIsotropicRemeshingFilter::RequestData(
                                 CGAL::to_double(p.z()));
     Vids[v] = inum++;
   }
+  
   for(face_descriptor f : faces(sm))
   {
     vtkNew<vtkIdList> cell;
-    for(halfedge_descriptor h :
-        halfedges_around_face(halfedge(f, sm), sm))
-    {
+    for(halfedge_descriptor h : halfedges_around_face(halfedge(f, sm), sm))
       cell->InsertNextId(Vids[target(h, sm)]);
-    }
+
     vtk_cells->InsertNextCell(cell);
   }
+  
   output->SetPoints(vtk_points);
   output->SetPolys(vtk_cells);
   output->Squeeze();
+
   return 1;
 }
 
 // ----------------------------------------------------------------------------
-void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, vtkIndent indent)
+void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, 
+                                            vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
   os<<"Length        : "<<Length        <<std::endl;
@@ -155,15 +153,15 @@ void vtkIsotropicRemeshingFilter::PrintSelf(std::ostream& os, vtkIndent indent)
 }
 
 // ------------------------------------------------------------------------------
-int vtkIsotropicRemeshingFilter::FillInputPortInformation(
-    int vtkNotUsed(port), vtkInformation* info)
+int vtkIsotropicRemeshingFilter::FillInputPortInformation(int vtkNotUsed(port),
+                                                          vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;
 }
 
 // ------------------------------------------------------------------------------
-int vtkIsotropicRemeshingFilter::FillOutputPortInformation(int, 
+int vtkIsotropicRemeshingFilter::FillOutputPortInformation(int,
                                                            vtkInformation *info)
 {
   // Always returns a vtkPolyData
@@ -189,11 +187,10 @@ int vtkIsotropicRemeshingFilter::RequestInformation(vtkInformation *,
   
   // Computes the initial target length:
   double * bounds = input->GetBounds();
-  double diagonal = std::sqrt(
-        (bounds[0]-bounds[1]) * (bounds[0]-bounds[1]) +
-      (bounds[2]-bounds[3]) * (bounds[2]-bounds[3]) +
-      (bounds[4]-bounds[5]) * (bounds[4]-bounds[5])
-      );
+  double diagonal = std::sqrt((bounds[0]-bounds[1]) * (bounds[0]-bounds[1]) +
+                              (bounds[2]-bounds[3]) * (bounds[2]-bounds[3]) +
+                              (bounds[4]-bounds[5]) * (bounds[4]-bounds[5]));
   SetLengthInfo(0.01*diagonal);
-  return 1;
-} 
+  
+    return 1;
+}

@@ -7,9 +7,7 @@
 // Inherit from the desired filter
 class vtkIsotropicRemeshingFilter : public vtkGeometryFilter
 {
-  
 public:
-  
   // VTK requirements
   static vtkIsotropicRemeshingFilter* New();
   vtkTypeMacro(vtkIsotropicRemeshingFilter, vtkGeometryFilter);
@@ -34,18 +32,17 @@ public:
 
 protected:
   vtkIsotropicRemeshingFilter();
-  ~vtkIsotropicRemeshingFilter(){};
+  ~vtkIsotropicRemeshingFilter(){}
 
   // Computes the bbox's diagonal length to set the default target edge length.
   int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
 private:
-  
   // Data set by the UI and used by the algorithm
   double Length;
   double LengthInfo;
   int MainIterations;
-  
+
   // needed but not implemented
   vtkIsotropicRemeshingFilter(const vtkIsotropicRemeshingFilter&);
   void operator=(const vtkIsotropicRemeshingFilter&);
