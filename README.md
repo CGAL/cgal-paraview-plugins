@@ -1,6 +1,6 @@
 ## Creating a CGAL Plugin for Paraview
 
-This page is a tutorial detailing the creation a CGAL plugin for the data analysis and visualization software [Paraview](https://www.paraview.org/). The different steps of the process are illustrated using code from a CGAL plugin that can run CGAL's [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData` object. This repository contains all the necessary source files related to the example plugin such that you can compile, run, and tweak it as you desire.
+This page is a tutorial detailing the creation of a CGAL plugin for the data analysis and visualization software [Paraview](https://www.paraview.org/). The different steps of the process are illustrated using code from a CGAL plugin that can run CGAL's [isotropic remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#title7) algorithm on a triangle mesh given as a `vtkPolyData` object. This repository contains all the necessary source files related to the example plugin such that you can compile, run, and tweak it as you desire.
 
 <p align="center">
 <img src="https://github.com/CGAL/cgal-web/blob/6d0e5cc6182b2e1ca42ed13599b902a4a5a0941e/images/Isotropic_remeshing_2.png" alt="drawing" width="750"/>
