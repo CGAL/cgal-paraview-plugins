@@ -10,7 +10,7 @@ This page is a tutorial detailing the creation of a CGAL plugin for the data ana
 
 ### Building Paraview from Sources
 
-First, obtain Paraview's sources from [the official repository](https://gitlab.kitware.com/paraview/paraview). You can either directly download the release 5.6, or clone the repository and check out the tag `5.6`. For safety and stability, we recommend using a `release` version. Note that if you chose to clone the repository, you will also need to update the submodules. To do so, go to the source directory, and run:
+First, obtain Paraview's sources from [the official repository](https://gitlab.kitware.com/paraview/paraview). You can either directly download the release 5.6, or clone the repository and check out the tag `5.6`. Note that if you chose to clone the repository, you will also need to update the submodules. To do so, go to the source directory, and run:
 
 ```
 git submodule update --init --recursive
@@ -427,7 +427,7 @@ Until Paraview 5.6.0 (included), the variable `Paraview_DIR` is simply the build
 
 ### Loading the Plugin in Paraview
 
-Launch Paraview, go to `Tools->Manage Plugins` and click on `Load New`. Select the lib file of your plugin in the list, and click `Close`. The plugin should appear in the `Filter List`. Your plugin is now ready to use!
+Launch Paraview, go to `Tools->Manage Plugins` and click on `Load New`. Select the library file of your plugin in the list, and click `Close`. The plugin should appear in the `Filter List`. Your plugin is now ready to use!
 
 ### Further Information
 
