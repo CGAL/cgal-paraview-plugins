@@ -114,7 +114,7 @@ int vtkIsotropicRemeshingFilter::RequestData(vtkInformation *,
   vtkNew<vtkCellArray> const vtk_cells;
   vtk_points->Allocate(sm.number_of_vertices());
   vtk_cells->Allocate(sm.number_of_faces());
-  std::vector<vtkIdType> Vids(sm.number_of_vertices());
+  std::vector<vtkIdType> Vids(num_vertices(sm));
   vtkIdType inum = 0;
   
   for(vertex_descriptor v : vertices(sm))
