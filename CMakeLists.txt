@@ -14,7 +14,7 @@ if(ParaView_FOUND)
   #If the plugin is used internally we don't need to include.
   if (NOT ParaView_BINARY_DIR)
       include(${PARAVIEW_USE_FILE})
-  endif(ParaView_BINARY_DIR)
+  endif(NOT ParaView_BINARY_DIR)
   
   #Paraview's macro to add the plugin. It takes care of all the vtk 
   #and paraview parts of the process, like link and integration
