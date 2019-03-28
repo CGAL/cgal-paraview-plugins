@@ -1,35 +1,38 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1...3.13 FATAL_ERROR)
 project(CGAL_Isotropic_remeshing_filter)
 #If the plugin is used internally (inside Paraview's source directory),
 #then we don't need to call find_package.
 if (NOT ParaView_BINARY_DIR)
   find_package(ParaView REQUIRED)
 endif()
-#Find CGAL
-find_package(CGAL)
-if(CGAL_FOUND)
-  include( ${CGAL_USE_FILE} )
-endif(CGAL_FOUND)
-if(ParaView_FOUND)
+
+include(GNUInstallDirs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+
+if(PARAVIEW_USE_FILE)
+  # ParaView 5.6
+  # ------------
   #If the plugin is used internally we don't need to include.
   if (NOT ParaView_BINARY_DIR)
       include(${PARAVIEW_USE_FILE})
   endif(NOT ParaView_BINARY_DIR)
-  
-  #Paraview's macro to add the plugin. It takes care of all the vtk 
-  #and paraview parts of the process, like link and integration
-  #in the UI
-  ADD_PARAVIEW_PLUGIN(IsotropicRemeshingFilter "1.0"
-    SERVER_MANAGER_XML IsotropicRemeshingFilter.xml
-    SERVER_MANAGER_SOURCES vtkIsotropicRemeshingFilter.cxx)
+  add_subdirectory(Plugin)
 else()
-  message("WARNING : The Paraview plugins need Paraview, so they won't be compiled.")
-endif(ParaView_FOUND)
-# Link with CGAL
-if(CGAL_FOUND)
-  if(ParaView_FOUND)
-    target_link_libraries(IsotropicRemeshingFilter LINK_PRIVATE
-      CGAL::CGAL 
-      ${Boost_LIBRARIES})
-  endif(ParaView_FOUND)
-endif (CGAL_FOUND)
+  # ParaView 6 or later
+  # --------------------
+  #  `paraview_plugin_build` uses `add_subdirectory` so it has to be in a sub-directory
+  paraview_plugin_scan(
+    PLUGIN_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Plugin/IsotropicRemeshingFilter.plugin"
+    ENABLE_BY_DEFAULT ON
+    HIDE_PLUGINS_FROM_CACHE ON
+    PROVIDES_PLUGINS  plugins
+    REQUIRES_MODULES  requires_modules
+    )
+  paraview_plugin_build(
+    RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    LIBRARY_DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY_SUBDIRECTORY "${PARAVIEW_PLUGIN_SUBDIR}"
+    PLUGINS ${plugins})
+endif()
