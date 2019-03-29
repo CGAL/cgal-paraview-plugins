@@ -1,4 +1,3 @@
-
 set(BUILD_SHARED_LIBS TRUE)
 
 #Paraview's macro to add the plugin. It takes care of all the vtk
@@ -19,10 +18,5 @@ else()
   paraview_add_plugin(IsotropicRemeshingFilter
     VERSION "1.0"
     MODULES IsotropicRemeshingFilters)
-
-# Link with CGAL
-target_link_libraries(IsotropicRemeshingFilter PRIVATE
-  CGAL::CGAL
-  ${Boost_LIBRARIES})
 endif()
 
