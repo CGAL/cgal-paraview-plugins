@@ -28,8 +28,16 @@ else()
     ENABLE_BY_DEFAULT ON
     HIDE_PLUGINS_FROM_CACHE ON
     PROVIDES_PLUGINS  plugins
-    REQUIRES_MODULES  requires_modules
+    REQUIRES_MODULES  required_modules
     )
+
+  foreach (module IN LISTS required_modules)
+    if (NOT TARGET "${module}")
+      message("Missing required module: ${module}")
+      return ()
+    endif ()
+  endforeach ()
+
   paraview_plugin_build(
     RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}"
     LIBRARY_DESTINATION "${CMAKE_INSTALL_LIBDIR}"

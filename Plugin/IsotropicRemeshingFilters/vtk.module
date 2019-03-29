@@ -1,0 +1,8 @@
+NAME
+  IsotropicRemeshingFilters
+DEPENDS
+  VTK::FiltersCore
+  VTK::FiltersGeometry
+PRIVATE_DEPENDS
+  VTK::CommonCore
+
