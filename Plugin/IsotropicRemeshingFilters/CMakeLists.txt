@@ -6,15 +6,18 @@ include( ${CGAL_USE_FILE} )
 #in the UI
 if(ParaView_FOUND AND PARAVIEW_USE_FILE)
   ## ParaView 5.6
-  ### workaround to avoid undefind macro. Doesn't seems to be of real use.
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/IsotropicRemeshingFiltersModule.h "#define ISOTROPICREMESHINGFILTERS_EXPORT VTK_EXPORT")
-    add_paraview_plugin(IsotropicRemeshingFilter "1.0"
-      SERVER_MANAGER_XML IsotropicRemeshingFilter.xml
-      SERVER_MANAGER_SOURCES vtkIsotropicRemeshingFilter.cxx)
-# Link with CGAL
-target_link_libraries(IsotropicRemeshingFilter PRIVATE
-  CGAL::CGAL
-  ${Boost_LIBRARIES})
+  add_paraview_plugin(IsotropicRemeshingFilter "1.0"
+    SERVER_MANAGER_XML IsotropicRemeshingFilter.xml
+    SERVER_MANAGER_SOURCES vtkIsotropicRemeshingFilter.cxx)
+
+  # Link with CGAL
+  target_link_libraries(IsotropicRemeshingFilter PRIVATE
+    CGAL::CGAL
+    ${Boost_LIBRARIES})
+
+  target_compile_definitions(IsotropicRemeshingFilter PRIVATE
+    ISOTROPICREMESHINGFILTERS_EXPORT=
+    CGAL_ISOTROPIC_REMESHING_NO_MODULE)
 else()
 set(classes
   vtkIsotropicRemeshingFilter)

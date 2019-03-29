@@ -3,7 +3,9 @@
 // Gives access to macros for communication with the UI
 #include "vtkFiltersCoreModule.h" 
 #include "vtkGeometryFilter.h"
-#include "IsotropicRemeshingFiltersModule.h"
+#ifndef CGAL_ISOTROPIC_REMESHING_NO_MODULE
+#  include "IsotropicRemeshingFiltersModule.h"
+#endif
 
 // Inherit from the desired filter
 class ISOTROPICREMESHINGFILTERS_EXPORT vtkIsotropicRemeshingFilter : public vtkGeometryFilter
