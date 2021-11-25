@@ -3,7 +3,7 @@ find_package(CGAL REQUIRED)
 #Paraview's macro to add the plugin. It takes care of all the vtk
 #and paraview parts of the process, like link and integration
 #in the UI
-if(ParaView_FOUND AND PARAVIEW_USE_FILE)
+if(ParaView_VERSION VERSION_LESS_EQUAL 5.6)
   ## ParaView 5.6
   add_paraview_plugin(IsotropicRemeshingFilter "1.0"
     SERVER_MANAGER_XML IsotropicRemeshingFilter.xml

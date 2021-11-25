@@ -11,7 +11,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}"
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 
-if(PARAVIEW_USE_FILE)
+message("ParaView version: ${ParaView_VERSION}")
+
+if(ParaView_VERSION VERSION_LESS_EQUAL 5.6)
   # ParaView 5.6
   # ------------
   #If the plugin is used internally we don't need to include.
