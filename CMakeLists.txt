@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.1...3.13 FATAL_ERROR)
 project(CGAL_Isotropic_remeshing_filter)
 #If the plugin is used internally (inside Paraview's source directory),
 #then we don't need to call find_package.
+
+find_package(MPI)
+
 if (NOT ParaView_BINARY_DIR)
   find_package(ParaView REQUIRED)
 endif()
@@ -11,7 +14,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}"
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 
-if(PARAVIEW_USE_FILE)
+message("ParaView version: ${ParaView_VERSION}")
+
+if(ParaView_VERSION VERSION_LESS_EQUAL 5.6)
   # ParaView 5.6
   # ------------
   #If the plugin is used internally we don't need to include.
