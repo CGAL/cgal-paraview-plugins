@@ -1,0 +1,8 @@
+NAME
+  IsotropicRemeshingFilter
+DESCRIPTION
+  This filter will remesh the given data set. It takes a PolyData 
+  as input, and returns a PolyData containing the remeshed input.
+REQUIRES_MODULES
+  VTK::CommonDataModel
+  VTK::FiltersGeometry
