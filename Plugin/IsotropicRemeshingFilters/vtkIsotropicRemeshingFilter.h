@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef vtkIsotropicRemeshingFilter_h
 #define vtkIsotropicRemeshingFilter_h
 // Gives access to macros for communication with the UI
-#include "vtkFiltersCoreModule.h" 
+#include "vtkFiltersCoreModule.h"
 #include "vtkGeometryFilter.h"
 #ifndef CGAL_ISOTROPIC_REMESHING_NO_MODULE
 #  include "IsotropicRemeshingFiltersModule.h"
