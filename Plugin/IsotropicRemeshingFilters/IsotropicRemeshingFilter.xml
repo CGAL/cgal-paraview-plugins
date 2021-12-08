@@ -1,10 +1,10 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="filters">
-    <SourceProxy name="IsotropicRemeshingFilter" class="vtkIsotropicRemeshingFilter" label="Isotropic Remeshing">
+    <SourceProxy name="IsotropicRemeshingFilter" class="vtkIsotropicRemeshingFilter" label="CGAL Isotropic Remeshing">
     <Documentation
       short_help="Remeshes datasets."
       long_help="Remeshes a dataset.">
-      This filter will remesh the given data set. It takes a PolyData 
+      This filter will remesh the given data set. It takes a PolyData
       as input, and returns a PolyData containing the remeshed input.
     </Documentation>
 <!-- Dialog to choose the input -->
@@ -17,7 +17,7 @@
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkDataSet"/>
+          <DataType value="vtkPolyData"/>
         </DataTypeDomain>
         <Documentation>
           The input Meshes.

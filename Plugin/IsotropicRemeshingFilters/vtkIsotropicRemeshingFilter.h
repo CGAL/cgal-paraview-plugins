@@ -36,7 +36,7 @@ public:
 
 protected:
   vtkIsotropicRemeshingFilter();
-  ~vtkIsotropicRemeshingFilter(){}
+  virtual ~vtkIsotropicRemeshingFilter(){}
 
   // Computes the bbox's diagonal length to set the default target edge length.
   int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
