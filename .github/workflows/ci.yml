@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - master
+  schedule:
+    # On Sundays at 01:00
+    - cron: '0 1 * * SUN'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        paraview_version: [ v5.9.1, v5.10.1, latest ]
+    container: kitware/paraview-for-ci:${{ matrix.paraview_version }}
+
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: 'source'
+        fetch-depth: 0
+        lfs: 'true'
+
+    - name: Setup Directories
+      working-directory: ${{github.workspace}}
+      run: mkdir build
+
+    - name: Install CGAL
+      run: apt update && apt install -y libcgal-dev
+
+    - name: Configure
+      working-directory: ${{github.workspace}}/build
+      run: cmake ../source -DCMAKE_PREFIX_PATH=/paraview/install -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      run: cmake --build . --parallel 2
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: xvfb-run ctest -j 2 --output-on-failure || xvfb-run ctest -j 1 --rerun-failed -VV
