@@ -9,7 +9,8 @@ on:
   schedule:
     # On Sundays at 01:00
     - cron: '0 1 * * SUN'
-
+  workflow_dispatch:
+  
 jobs:
   ci:
     runs-on: ubuntu-latest
