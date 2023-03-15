@@ -10,7 +10,7 @@ on:
     # On Sundays at 01:00
     - cron: '0 1 * * SUN'
   workflow_dispatch:
-  
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: 'source'
         fetch-depth: 0
@@ -34,7 +34,9 @@ jobs:
       run: mkdir build
 
     - name: Install CGAL
-      run: apt update && apt install -y libcgal-dev
+      run: |
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA
+        apt update && apt install -y libcgal-dev
 
     - name: Configure
       working-directory: ${{github.workspace}}/build
