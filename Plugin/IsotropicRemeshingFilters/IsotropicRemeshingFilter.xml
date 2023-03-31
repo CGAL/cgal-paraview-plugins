@@ -1,61 +1,59 @@
 <ServerManagerConfiguration>
-  <ProxyGroup name="filters">
-    <SourceProxy name="IsotropicRemeshingFilter" class="vtkIsotropicRemeshingFilter" label="CGAL Isotropic Remeshing">
-    <Documentation
-      short_help="Remeshes datasets."
-      long_help="Remeshes a dataset.">
-      This filter will remesh the given data set. It takes a PolyData
-      as input, and returns a PolyData containing the remeshed input.
-    </Documentation>
-<!-- Dialog to choose the input -->
-      <InputProperty
-        name="Mesh"
-        port_index="0"
-        command="SetInputConnection">
-        <ProxyGroupDomain name="groups">
-          <Group name="sources"/>
-          <Group name="filters"/>
-        </ProxyGroupDomain>
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData"/>
-        </DataTypeDomain>
+  <!-- Define a new category for the filter -->
+  <Category name="Remeshing Filters">
+    <ProxyGroup name="IsotropicRemeshingFilter">
+      <SourceProxy class="vtkIsotropicRemeshingFilter" label="CGAL Isotropic Remeshing">
         <Documentation>
-          The input Meshes.
+          Remeshes a PolyData dataset to generate a smoother mesh with a prescribed edge length.
         </Documentation>
-      </InputProperty>
-<!-- Elements of configuration of the filter -->
-      <DoubleVectorProperty name="Length"
-        command="SetLength"
-        label="Target Edge Length"
-        number_of_elements="1"
-        default_values="0"
-        information_property="LengthInfo"
-        >
-         <DoubleRangeDomain name="range" min="0.0" />
-        <Documentation>
-          The target length for the new edges of the mesh (default is 1% of the bounding box).
-        </Documentation>
-      </DoubleVectorProperty>
-      <DoubleVectorProperty name="LengthInfo"
-                            command="GetLengthInfo"
-                            information_only="1">
-        <SimpleDoubleInformationHelper />
-      </DoubleVectorProperty>
-      <IntVectorProperty name="MainIterations"
-        command="SetMainIterations"
-        label="#Main Iterations"
-        number_of_elements="1"
-        default_values="1">
-        <Documentation>
-          The number of iterations for the sequence of atomic operations performed (edge splits,
-          edge collapses, edge flips, tangential relaxation and projection to the initial surface
-          to generate a smooth mesh with a prescribed edge length).
-        </Documentation>
-      </IntVectorProperty>
-      <!-- Show in the Filters menu under "CGAL"-->
-      <Hints>
-        <ShowInMenu category="CGAL" />
-      </Hints>
-    </SourceProxy>
-  </ProxyGroup>
+        <!-- Choose the input PolyData -->
+        <InputProperty
+          name="Input"
+          command="SetInputConnection">
+          <DataTypeDomain name="input_type">
+            <DataType value="vtkPolyData"/>
+          </DataTypeDomain>
+          <Documentation>
+            The input PolyData.
+          </Documentation>
+        </InputProperty>
+        <!-- Define target edge length -->
+        <DoubleVectorProperty
+          name="TargetEdgeLength"
+          command="SetLength"
+          label="Target Edge Length"
+          number_of_elements="1"
+          default_values="0"
+          information_property="TargetEdgeLengthInfo">
+          <DoubleRangeDomain name="range" min="0.0"/>
+          <Documentation>
+            The target length for the new edges of the mesh (default is 1% of the bounding box).
+          </Documentation>
+        </DoubleVectorProperty>
+        <DoubleVectorProperty
+          name="TargetEdgeLengthInfo"
+          command="GetLengthInfo"
+          information_only="1">
+          <SimpleDoubleInformationHelper />
+        </DoubleVectorProperty>
+        <!-- Define number of iterations -->
+        <IntVectorProperty
+          name="NumberOfIterations"
+          command="SetMainIterations"
+          label="#Iterations"
+          number_of_elements="1"
+          default_values="1">
+          <Documentation>
+            The number of iterations for the sequence of atomic operations performed (edge splits,
+            edge collapses, edge flips, tangential relaxation and projection to the initial surface
+            to generate a smooth mesh with a prescribed edge length).
+          </Documentation>
+        </IntVectorProperty>
+        <!-- Show the filter in the menu under the Remeshing Filters category -->
+        <Hints>
+          <ShowInMenu category="Remeshing Filters"/>
+        </Hints>
+      </SourceProxy>
+    </ProxyGroup>
+  </Category>
 </ServerManagerConfiguration>
