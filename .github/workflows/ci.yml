@@ -35,7 +35,7 @@ jobs:
 
     - name: Install CGAL
       run: |
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1A127079A92F09ED
         apt update && apt install -y libcgal-dev
 
     - name: Configure
