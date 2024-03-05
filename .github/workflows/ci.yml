@@ -10,7 +10,7 @@ on:
     # On Sundays at 01:00
     - cron: '0 1 * * SUN'
   workflow_dispatch:
-  
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         path: 'source'
         fetch-depth: 0
