@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        paraview_version: [ v5.9.1, v5.10.1, latest ]
+        paraview_version: [ v5.9.1, v5.10.1, v5.11.1, latest ]
     container: kitware/paraview-for-ci:${{ matrix.paraview_version }}
 
 
@@ -34,8 +34,11 @@ jobs:
       run: mkdir build
 
     - name: Install CGAL
-      run: |
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA
+      run: >
+        test -f /usr/share/doc/kitware-archive-keyring/copyright ||
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null |
+        gpg --dearmor - |
+        apt-key add - ;
         apt update && apt install -y libcgal-dev
 
     - name: Configure
